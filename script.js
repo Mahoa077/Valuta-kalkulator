@@ -31,13 +31,13 @@ async function convert() {
         const data = await response.json();
         const rate = data.conversion_rates[toCurrency];
         
-        result = amount * rate.toFixed(2)
+        let output = amount * rate.toFixed(2)
             //'${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}';
-            
         console.log("ferdig ingen error")
-        console.log(result)
+        console.log(output)
+        result.innerText = output
     
-    } catch {
-       console.log("noe gikk feil")
+    } catch (error) {
+       console.log(error)
     }
 }
