@@ -31,7 +31,8 @@ async function convert() {
         const data = await response.json();
         const rate = data.conversion_rates[toCurrency];
         
-        let output = amount * rate.toFixed(2)
+        let output = amount * rate
+            output = output.toFixed(2)
             //'${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}';
         console.log("ferdig ingen error")
         console.log(output)
