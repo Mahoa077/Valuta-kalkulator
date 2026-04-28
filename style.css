@@ -31,3 +31,7 @@ button:hover {
     background-color: rgb(48, 132, 104); 
     color: white;
 }
+
+#currencyBilder {
+    transition: opacity 0.3 ease;
+}
