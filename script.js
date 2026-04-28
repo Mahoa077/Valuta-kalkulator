@@ -42,3 +42,43 @@ async function convert() {
        console.log(error)
     }
 }
+
+const apiURL = "https://app.exchangerate-api.com/dashboard";
+const CACHE_key = "exchangeRates";
+const CACHE_tid_key = "exchangeRatesTime";
+const CACHE_tid = 1000 * 60 * 60; // dette er da altså en time til sammen
+
+async function getRates() {
+    const cachedData = localStorage.getItem(CACHE_key);
+    const cachedTid = localStorage.getItem(CACHE_tid_key);
+
+    const now = Date.now();
+
+    // dette sjekker om cache eksisterer og om det fortsatt er riktig og funker 
+    if(cachedData && cachedTid &&(now - cachedTid < CACHE_tid)) {
+        console.log("Bruker cached dataen");
+        return JSON.parse(cachedData);
+    }
+
+    // Ellers så hent ny data
+    console.log("Henter ny data");
+    const respons = await fetch(apiURL);
+    const data = await response.json();
+
+    // lagrer da til cache 
+    localStorage.setItem(CACHE_key, JSON.stringify(data))
+    localStorage.setItem(CACHE_tid_key, now);
+
+    return data;
+}
+
+async function converterCurrency(amount, from, to) {
+    const data = await getRates();
+
+    const rateFRA = data.rates[from];
+    const rateTIL = data.rates[to];
+
+    const resultat = (amount / rateFRA) * rateTIL;
+
+    return resultat;
+}
