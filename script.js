@@ -32,8 +32,7 @@ async function convert() {
 
         result.innerText = `${amount} ${fromCurrency} = ${output} ${toCurrency}`;
 
-        bg.style.backgroundImage = `url(${currencyBilder[toCurrency]})`;
-        bg.style.opacity = 1;
+        
         
     } catch (error) {
        console.log(error);
