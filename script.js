@@ -31,6 +31,9 @@ async function convert() {
         const output = (amount * rate).toFixed(2);
 
         result.innerText = `${amount} ${fromCurrency} = ${output} ${toCurrency}`;
+
+        bg.style.backgroundImage = `url(${currencyBilder[toCurrency]})`;
+        bg.style.opacity = 1;
         
     } catch (error) {
        console.log(error);
@@ -105,14 +108,13 @@ const currencyBilder = {
 selectTo.addEventListener("change", () => {
     const valgtCurrency = selectTo.value;
 
-    bg.style.opacity = 0;
+    
+    bg.style.backgroundImage = `url(${currencyBilder[valgtCurrency]})`;
+    bg.style.opacity = 1;
 
-    setTimeout(() => {
-        bg.style.backgroundImage = `url(${currencyBilder[valgtCurrency]})`;
-        bg.style.opacity = 1;
-
-    }, 250);
 });
 
 const convertButton = document.getElementById("convertButton");
 convertButton.addEventListener("click", convert);
+
+bg.style.opacity = 0;
