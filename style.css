@@ -3,6 +3,10 @@ body {
     font-family: 'Times New Roman', Times, serif;
     background-color: rgba(0, 128, 0, 0.458);
     text-align: center;
+
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.5s ease;
 }
 
 .container {
@@ -33,5 +37,26 @@ button:hover {
 }
 
 #currencyBilder {
-    transition: opacity 0.3 ease;
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    display: block;
+    margin: 10px auto;
+    transition: opacity 0.3s ease;
+}
+
+#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-size: cover;
+    background-position: center;
+
+    z-index: -1;
+
+    transition: 0.5s ease;
+    opacity: 1;
 }
