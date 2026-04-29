@@ -105,16 +105,13 @@ const currencyBilder = {
 selectTo.addEventListener("change", () => {
     const valgtCurrency = selectTo.value;
 
-    bilde.style.opacity = 0;
-
     bg.style.opacity = 0;
 
     setTimeout(() => {
         bg.style.backgroundImage = `url(${currencyBilder[valgtCurrency]})`;
         bg.style.opacity = 1;
-        bilde.src = currencyBilder[valgtCurrency];
-        bilde.style.opacity = 1;
-    }, 200) ;
+
+    }, 250);
 });
 
 const convertButton = document.getElementById("convertButton");

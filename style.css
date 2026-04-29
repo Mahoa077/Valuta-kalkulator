@@ -4,9 +4,14 @@ body {
     background-color: rgba(0, 128, 0, 0.458);
     text-align: center;
 
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     background-size: cover;
     background-position: center;
     transition: background-image 0.5s ease;
+
+    z-index: 0;
+    margin: 0;
+    overflow-x: hidden;
 }
 
 .container {
@@ -36,7 +41,7 @@ button:hover {
     color: white;
 }
 
-#currencyBilder {
+/*#currencyBilder {
     width: 100px;
     height: 100px;
     object-fit: contain;
@@ -44,19 +49,25 @@ button:hover {
     margin: 10px auto;
     transition: opacity 0.3s ease;
 }
-
+*/
 #bg {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-
-    background-size: cover;
+    inset: 0; /* tydelig vis bedre enn å bruke top/left/bottom osv*/
+    background-size: contain;
     background-position: center;
+    background-repeat: no-repeat;
+    background-color: #0f1720;
+    z-index: -2;
+}
 
+#overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
     z-index: -1;
+} 
 
-    transition: 0.5s ease;
-    opacity: 1;
+.container{
+    position: relative;
+    z-index: 1;
 }
