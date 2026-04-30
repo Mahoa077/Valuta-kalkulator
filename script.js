@@ -7,7 +7,7 @@ const CACHE_key = "exchangeRates_";
 const CACHE_tid_key = "exchangeRatesTime_";
 const CACHE_tid = 1000 * 60 * 60 * 24; // dette gjør at det går en dag mellom hver gang det blir oppdatert
 
-const currencies = ["USD", "NOK", "EUR", "AUD", "CLP", "SEK"];
+const currencies = ["USD", "NOK", "EUR", "AUD", "CLP", "SEK", "CAD", "DKK", "JPY"];
 
 const fromSelect = document.getElementById("fromCurrency");
 const toSelect = document.getElementById("toCurrency");
@@ -111,6 +111,10 @@ const currencyBilder = {
     NOK: "bilder/nokbilde.png",
     AUD: "bilder/audbilde.png",
     CLP: "bilder/clpbilde.png",
+    SEK: "bilder/sekbilde.png",
+    CAD: "bilder/cadbilde.png",
+    DKK: "bilder/dkkbilde.png",
+    JPY: "bilder/jpybilde.png",
 }
 
 selectTo.addEventListener("change", () => {
