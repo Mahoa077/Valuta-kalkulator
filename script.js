@@ -22,12 +22,21 @@ currencies.forEach(currency => {
 
 async function convert() {
     const result = document.getElementById("result");
+    const lastUpdated = document.getElementById("lastUpdated");
 
     try {
+
         const amount = Number(document.getElementById("amount").value);
         const fromCurrency = document.getElementById("fromCurrency").value;
         const toCurrency = document.getElementById("toCurrency").value;
         
+        const cachedTime = localStorage.getItem(CACHE_tid_key + fromCurrency);
+
+        if (cachedTime) {
+            lastUpdated.innerText = "Sist oppdatert: " + formatTimeAgo(Number(cachedTime));
+        } else {
+            lastUpdated.innerText = "Sist oppdatert: ukjent ";
+        }
 
         if (!amount || amount <= 0){
             result.innerText = "Skriv inn et gyldig beløp";
@@ -54,6 +63,7 @@ async function convert() {
 
 // henter valutakurser ( med cache )
 async function getRates(base = "USD") {
+
     const cachedData = localStorage.getItem(CACHE_key + base);
     const cachedTid = localStorage.getItem(CACHE_tid_key + base);
     const now = Date.now();
@@ -82,7 +92,19 @@ async function getRates(base = "USD") {
     localStorage.setItem(CACHE_key + base, JSON.stringify(data));
     localStorage.setItem(CACHE_tid_key + base, now);
 
-    return data;
+    return data; 
+}
+
+function formatTimeAgo(timestamp) {
+    const now = Date.now();
+    const diff = now - timestamp;
+
+    const minutes =Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60); 
+
+    if (minutes < 1) return "akkurat nå";
+    if (minutes < 60) return `${minutes} minutter siden`;
+    return `${hours} timer siden`; 
 }
 
 /*// konverterer valutaen 
