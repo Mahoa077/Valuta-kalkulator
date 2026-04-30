@@ -5,7 +5,7 @@ const apiKey = '311f91f03c97240a6690c66f';
 //const apiURL = "https://app.exchangerate-api.com/dashboard";
 const CACHE_key = "exchangeRates_";
 const CACHE_tid_key = "exchangeRatesTime_";
-const CACHE_tid = 1000 * 60 * 60; // dette er da altså en time til sammen
+const CACHE_tid = 1000 * 60 * 60 * 24; // dette gjør at det går en time mellom hver gang det blir oppdatert
 
 //const convertButton = document.getElementById("convertButton");
 
