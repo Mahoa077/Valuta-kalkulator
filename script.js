@@ -1,6 +1,6 @@
 console.log("App har startet");
 
-const apiKey = '311f91f03c97240a6690c66f';
+//const apiKey = '311f91f03c97240a6690c66f';
 
 //const apiURL = "https://app.exchangerate-api.com/dashboard";
 const CACHE_key = "exchangeRates_";
@@ -78,7 +78,7 @@ async function getRates(base = "USD") {
     console.log("Henter ny data for", base);
 
     const response = await fetch(
-        `https://v6.exchangerate-api.com/v6/${apiKey}/latest/${base}`
+        `http://localhost:3000/api/rates/${base}`
     );
     
     const data = await response.json();
@@ -151,4 +151,4 @@ selectTo.addEventListener("change", () => {
 const convertButton = document.getElementById("convertButton");
 convertButton.addEventListener("click", convert);
 
-bg.style.opacity = 0;
+bg.style.opacity = 0;s
