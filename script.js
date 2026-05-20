@@ -78,7 +78,7 @@ async function getRates(base = "USD") {
     console.log("Henter ny data for", base);
 
     const response = await fetch(
-        `http://localhost:3000/api/rates/${base}`
+        `http://192.168.20.77:3000/api/rates/${base}`
     );
     
     const data = await response.json();
