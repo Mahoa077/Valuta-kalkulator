@@ -13,3 +13,13 @@ Når du har gjort dette så kan du trykke på konverter knappen, som da viser be
 
 Denne valuta-kalkulatoren kan bli hostet på nettet siden jeg har brukt vercel.com
 For å finne nettsiden trenger du bare å søke opp https://valuta-kalkulator-seven.vercel.app/ 
+
+Prosjektet er bygget med en client-server arkitektur.
+
+Frontend er separert fra backend, og kommunikasjon skjer via REST API.
+
+Backend kjører på Node.js med Express og håndteres i produksjon av PM2.
+
+NGINX brukes som reverse proxy for å rute API-kall og servere frontend på samme domene.
+
+Applikasjonen bruker caching for å redusere API-kall og forbedre ytelse.

@@ -60,9 +60,60 @@ async function convert() {
     
 }
 
+async function getRates(base = "USD") {
+
+    const cachedData = localStorage.getItem(CACHE_key + base);
+    const cachedTid = localStorage.getItem(CACHE_tid_key + base);
+
+    const now = Date.now();
+
+    // BRUK CACHE hvis under 24 timer gammel
+    if (cachedData && cachedTid && (now - cachedTid < CACHE_tid)) {
+        console.log("Bruker cache for", base);
+
+        return JSON.parse(cachedData);
+    }
+
+    console.log("Henter ny data for", base);
+
+    try {
+
+        const response = await fetch(`/api/rates/${base}`);
+
+        if (!response.ok) {
+            throw new Error("API svarte ikke riktig");
+        }
+
+        const data = await response.json();
+
+        if (data.result === "error") {
+            throw new Error(data["error-type"]);
+        }
+
+        // lagrer NY cache
+        localStorage.setItem(CACHE_key + base, JSON.stringify(data));
+        localStorage.setItem(CACHE_tid_key + base, now);
+
+        return data;
+
+    } catch (error) {
+
+        console.log("API feil:", error);
+
+        // fallback til gammel cache hvis API er nede
+        if (cachedData) {
+
+            console.log("Bruker gammel cache fordi API feilet");
+
+            return JSON.parse(cachedData);
+        }
+
+        throw error;
+    }
+}
 
 // henter valutakurser ( med cache )
-async function getRates(base = "USD") {
+/*//async function getRates(base = "USD") {
 
     const cachedData = localStorage.getItem(CACHE_key + base);
     const cachedTid = localStorage.getItem(CACHE_tid_key + base);
@@ -154,4 +205,4 @@ selectTo.addEventListener("change", () => {
 const convertButton = document.getElementById("convertButton");
 convertButton.addEventListener("click", convert);
 
-bg.style.opacity = 0;s
+bg.style.opacity = 0;
