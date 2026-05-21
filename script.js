@@ -1,6 +1,6 @@
 console.log("App har startet");
 
-//const apiKey = '311f91f03c97240a6690c66f';
+//const apiKey = 'deac2d8fd9967e3a4a3ff816';
 
 //const apiURL = "https://app.exchangerate-api.com/dashboard";
 const CACHE_key = "exchangeRates_";
@@ -21,43 +21,60 @@ currencies.forEach(currency => {
 });
 
 async function convert() {
+
     const result = document.getElementById("result");
     const lastUpdated = document.getElementById("lastUpdated");
 
     try {
 
         const amount = Number(document.getElementById("amount").value);
-        const fromCurrency = document.getElementById("fromCurrency").value;
-        const toCurrency = document.getElementById("toCurrency").value;
-        
-        const cachedTime = localStorage.getItem(CACHE_tid_key + fromCurrency);
 
-        if (cachedTime) {
-            lastUpdated.innerText = "Sist oppdatert: " + formatTimeAgo(Number(cachedTime));
-        } else {
-            lastUpdated.innerText = "Sist oppdatert: ukjent ";
-        }
+        const fromCurrency =
+            document.getElementById("fromCurrency").value;
 
-        if (!amount || amount <= 0){
+        const toCurrency =
+            document.getElementById("toCurrency").value;
+
+        if (!amount || amount <= 0) {
+
             result.innerText = "Skriv inn et gyldig beløp";
+
             return;
         }
 
+        // HENT DATA FØRST
         const data = await getRates(fromCurrency);
+
+        // VIS SIST OPPDATERT
+        if (data.time_last_update_utc) {
+
+            lastUpdated.innerText =
+                "Valutakurser oppdatert: " +
+                data.time_last_update_utc;
+
+        } else {
+
+            lastUpdated.innerText =
+                "Sist oppdatert: ukjent";
+        }
+
+        // HENT VALUTAKURS
         const rate = data.conversion_rates[toCurrency];
-        
+
+        // REGN UT
         const output = (amount * rate).toFixed(2);
 
-        result.innerText = `${amount} ${fromCurrency} = ${output} ${toCurrency}`;
+        // VIS RESULTAT
+        result.innerText =
+            `${amount} ${fromCurrency} = ${output} ${toCurrency}`;
 
-        
-        
     } catch (error) {
-       console.log(error);
-       result.innerText = "Noe gikk galt. Prøv igjen senere, unnskyld!";
-    }
 
-    
+        console.log(error);
+
+        result.innerText =
+            "Noe gikk galt. Prøv igjen senere.";
+    }
 }
 
 async function getRates(base = "USD") {
@@ -112,54 +129,38 @@ async function getRates(base = "USD") {
     }
 }
 
-// henter valutakurser ( med cache )
-/*//async function getRates(base = "USD") {
-
-    const cachedData = localStorage.getItem(CACHE_key + base);
-    const cachedTid = localStorage.getItem(CACHE_tid_key + base);
-    const now = Date.now();
-
-    // dette sjekker om cache eksisterer og om det fortsatt er riktig og funker 
-    if(cachedData && cachedTid &&(now - cachedTid < CACHE_tid)) {
-        console.log("Bruker cache for", base);
-        return JSON.parse(cachedData);
-    }
-
-    // Ellers så hent ny data
-    console.log("Henter ny data for", base);
 
 
-    const response = await fetch(`/api/rates/${base}`);
-    //const response = await fetch(
-    //    `/api/rates/${base}`
-        //`http://192.168.20.77:3000/api/rates/${base}`
-    //);
-    
-    const data = await response.json();
+const https = require('https');
+const http = require('http');
 
-    if (data.result === "error"){
-        throw new Error(data["error-type"]);
-    }
-    
+function insecureGet(url, timeout = 5000) {
+    return new Promise((resolve, reject) => {
+        const client = url.startsWith('https') ? https : http;
+        
+        // Konfigurer agenten for å ignorere sertifikatfeil (kun for testing!)
+        const agent = new client.Agent({
+            rejectUnauthorized: false 
+        });
 
-    // lagrer da til cache 
-    localStorage.setItem(CACHE_key + base, JSON.stringify(data));
-    localStorage.setItem(CACHE_tid_key + base, now);
+        const req = client.get(url, { agent, timeout }, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => resolve(data));
+        });
 
-    return data; 
+        req.on('error', reject);
+        req.on('timeout', () => {
+            req.destroy();
+            reject(new Error('Tidsavbrudd'));
+        });
+    });
 }
 
-function formatTimeAgo(timestamp) {
-    const now = Date.now();
-    const diff = now - timestamp;
-
-    const minutes =Math.floor(diff / 60000);
-    const hours = Math.floor(minutes / 60); 
-
-    if (minutes < 1) return "akkurat nå";
-    if (minutes < 60) return `${minutes} minutter siden`;
-    return `${hours} timer siden`; 
-}
+// Bruk
+insecureGet('https://example.com')
+    .then(response => console.log(response))
+    .catch(err => console.error(err));
 
 /*// konverterer valutaen 
 async function converterCurrency(amount, from, to) {ba
@@ -192,6 +193,13 @@ const currencyBilder = {
     DKK: "bilder/dkkbilde.png",
     JPY: "bilder/jpybilde.png",
 }
+
+document.getElementById("clearCache").addEventListener("click", () => {
+
+    localStorage.clear();
+
+    alert("Cache slettet!");
+});
 
 selectTo.addEventListener("change", () => {
     const valgtCurrency = selectTo.value;
