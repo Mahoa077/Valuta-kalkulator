@@ -1,5 +1,7 @@
 console.log("App har startet");
 
+// Resten av koden din er identisk...
+
 //const apiKey = 'deac2d8fd9967e3a4a3ff816';
 
 //const apiURL = "https://app.exchangerate-api.com/dashboard";
@@ -95,7 +97,11 @@ async function getRates(base = "USD") {
 
     try {
 
-        const response = await fetch(`/api/rates/${base}`);
+        const response = await fetch(
+            `https://v6.exchangerate-api.com/v6/deac2d8fd9967e3a4a3ff816/latest/${base}`
+        );
+
+        //const response = await fetch(`/api/rates/${base}`);
 
         if (!response.ok) {
             throw new Error("API svarte ikke riktig");
@@ -131,36 +137,6 @@ async function getRates(base = "USD") {
 
 
 
-const https = require('https');
-const http = require('http');
-
-function insecureGet(url, timeout = 5000) {
-    return new Promise((resolve, reject) => {
-        const client = url.startsWith('https') ? https : http;
-        
-        // Konfigurer agenten for å ignorere sertifikatfeil (kun for testing!)
-        const agent = new client.Agent({
-            rejectUnauthorized: false 
-        });
-
-        const req = client.get(url, { agent, timeout }, (res) => {
-            let data = '';
-            res.on('data', chunk => data += chunk);
-            res.on('end', () => resolve(data));
-        });
-
-        req.on('error', reject);
-        req.on('timeout', () => {
-            req.destroy();
-            reject(new Error('Tidsavbrudd'));
-        });
-    });
-}
-
-// Bruk
-insecureGet('https://example.com')
-    .then(response => console.log(response))
-    .catch(err => console.error(err));
 
 /*// konverterer valutaen 
 async function converterCurrency(amount, from, to) {ba
