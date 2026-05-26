@@ -1,36 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valutakalkulator</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
     <div id="bg"></div>
     <div id="overlay"></div>
 
     <div class="container">
+
         <h2>Valuta Kalkulator</h2>
 
         <input type="number" id="amount" placeholder="Beløp">
 
-        <h4>Velg den valutaen du har:</h4>
+        <h4>Velg valuta du har:</h4>
         <select id="fromCurrency"></select>
 
-        <h4>Velg hvilken valuta du vil bytte om til:</h4>
+        <h4>Velg valuta du vil konvertere til:</h4>
         <select id="toCurrency"></select>
+
+        <button id="swapButton">Bytt valuta</button>
 
         <button id="convertButton">Konverter</button>
 
         <p id="result">Her kommer beløpet:</p>
 
-        <p id="lastUpdated">Sist valutaen ble oppdatert: </p>
+        <p id="lastUpdated">
+            Sist oppdatert:
+        </p>
 
         <button id="clearCache">Tøm cache</button>
+
     </div>
 
     <script src="script.js"></script>
-</body>
 
+</body>
 </html>

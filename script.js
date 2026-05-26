@@ -1,164 +1,49 @@
 console.log("App har startet");
 
-// Resten av koden din er identisk...
 
-//const apiKey = 'deac2d8fd9967e3a4a3ff816';
+// CACHE
+const CACHE_KEY = "exchangeRates_";
+const CACHE_TIME_KEY = "exchangeRatesTime_";
 
-//const apiURL = "https://app.exchangerate-api.com/dashboard";
-const CACHE_key = "exchangeRates_";
-const CACHE_tid_key = "exchangeRatesTime_";
-const CACHE_tid = 1000 * 60 * 60 * 24; // dette gjør at det går en dag mellom hver gang det blir oppdatert
-
-const currencies = ["USD", "NOK", "EUR", "AUD", "CLP", "SEK", "CAD", "DKK", "JPY"];
-
-const fromSelect = document.getElementById("fromCurrency");
-const toSelect = document.getElementById("toCurrency");
-//const convertButton = document.getElementById("convertButton");
-
-//convertButton.addEventListener("click", convertCurrency);
-
-currencies.forEach(currency => {
-    fromSelect.innerHTML += `<option value="${currency}">${currency}</option>`;
-    toSelect.innerHTML += `<option value="${currency}">${currency}</option>`;
-});
-
-async function convert() {
-
-    const result = document.getElementById("result");
-    const lastUpdated = document.getElementById("lastUpdated");
-
-    try {
-
-        const amount = Number(document.getElementById("amount").value);
-
-        const fromCurrency =
-            document.getElementById("fromCurrency").value;
-
-        const toCurrency =
-            document.getElementById("toCurrency").value;
-
-        if (!amount || amount <= 0) {
-
-            result.innerText = "Skriv inn et gyldig beløp";
-
-            return;
-        }
-
-        // HENT DATA FØRST
-        const data = await getRates(fromCurrency);
-
-        // VIS SIST OPPDATERT
-        if (data.time_last_update_utc) {
-
-            lastUpdated.innerText =
-                "Valutakurser oppdatert: " +
-                data.time_last_update_utc;
-
-        } else {
-
-            lastUpdated.innerText =
-                "Sist oppdatert: ukjent";
-        }
-
-        // HENT VALUTAKURS
-        const rate = data.conversion_rates[toCurrency];
-
-        // REGN UT
-        const output = (amount * rate).toFixed(2);
-
-        // VIS RESULTAT
-        result.innerText =
-            `${amount} ${fromCurrency} = ${output} ${toCurrency}`;
-
-    } catch (error) {
-
-        console.log(error);
-
-        result.innerText =
-            "Noe gikk galt. Prøv igjen senere.";
-    }
-}
-
-async function getRates(base = "USD") {
-
-    const cachedData = localStorage.getItem(CACHE_key + base);
-    const cachedTid = localStorage.getItem(CACHE_tid_key + base);
-
-    const now = Date.now();
-
-    // BRUK CACHE hvis under 24 timer gammel
-    if (cachedData && cachedTid && (now - cachedTid < CACHE_tid)) {
-        console.log("Bruker cache for", base);
-
-        return JSON.parse(cachedData);
-    }
-
-    console.log("Henter ny data for", base);
-
-    try {
-
-        const response = await fetch(
-            `https://v6.exchangerate-api.com/v6/deac2d8fd9967e3a4a3ff816/latest/${base}`
-        );
-
-        //const response = await fetch(`/api/rates/${base}`);
-
-        if (!response.ok) {
-            throw new Error("API svarte ikke riktig");
-        }
-
-        const data = await response.json();
-
-        if (data.result === "error") {
-            throw new Error(data["error-type"]);
-        }
-
-        // lagrer NY cache
-        localStorage.setItem(CACHE_key + base, JSON.stringify(data));
-        localStorage.setItem(CACHE_tid_key + base, now);
-
-        return data;
-
-    } catch (error) {
-
-        console.log("API feil:", error);
-
-        // fallback til gammel cache hvis API er nede
-        if (cachedData) {
-
-            console.log("Bruker gammel cache fordi API feilet");
-
-            return JSON.parse(cachedData);
-        }
-
-        throw error;
-    }
-}
+// 1 UKE CACHE
+const CACHE_TIME =
+    1000 * 60 * 60 * 24 * 7;
 
 
+// VALUTAER
+const currencies = [
+    "USD",
+    "NOK",
+    "EUR",
+    "AUD",
+    "CLP",
+    "SEK",
+    "CAD",
+    "DKK",
+    "JPY"
+];
 
 
-/*// konverterer valutaen 
-async function converterCurrency(amount, from, to) {ba
-    const data = await getRates();
+// HTML ELEMENTER
+const fromSelect =
+    document.getElementById("fromCurrency");
 
-    const rateFRA = data.rates[from];
-    const rateTIL = data.rates[to];
+const toSelect =
+    document.getElementById("toCurrency");
 
-    const resultat = (amount / rateFRA) * rateTIL;
+const result =
+    document.getElementById("result");
 
-    return resultat;
+const lastUpdated =
+    document.getElementById("lastUpdated");
 
-    
-} */
+const bg =
+    document.getElementById("bg");
 
-// Bilder til valuta kalkulator     
-const selectTo = document.getElementById("toCurrency");
-const bilde = document.getElementById("currencyBilder");
 
-const bg = document.getElementById("bg");
+// BILDER
+const currencyImages = {
 
-const currencyBilder = {
     USD: "bilder/usdbilde.png",
     EUR: "bilder/eurbilde.png",
     NOK: "bilder/nokbilde.png",
@@ -167,26 +52,263 @@ const currencyBilder = {
     SEK: "bilder/sekbilde.png",
     CAD: "bilder/cadbilde.png",
     DKK: "bilder/dkkbilde.png",
-    JPY: "bilder/jpybilde.png",
+    JPY: "bilder/jpybilde.png"
+};
+
+
+// FYLL DROPDOWNS
+currencies.forEach(currency => {
+
+    const option1 =
+        new Option(currency, currency);
+
+    const option2 =
+        new Option(currency, currency);
+
+    fromSelect.add(option1);
+    toSelect.add(option2);
+});
+
+
+// STANDARDVERDIER
+fromSelect.value = "USD";
+toSelect.value = "NOK";
+
+
+// HENT VALUTAKURSER
+async function getRates(base = "USD") {
+
+    const cachedData =
+        localStorage.getItem(CACHE_KEY + base);
+
+    const cachedTime =
+        localStorage.getItem(CACHE_TIME_KEY + base);
+
+    const now = Date.now();
+
+    // BRUK CACHE
+    if (
+        cachedData &&
+        cachedTime &&
+        (now - cachedTime < CACHE_TIME)
+    ) {
+
+        console.log("Bruker cache for", base);
+
+        return {
+            ...JSON.parse(cachedData),
+            fromCache: true
+        };
+    }
+
+    console.log("Henter ny data for", base);
+
+    try {
+
+        // BACKEND API
+        const response = await fetch(
+            `http://localhost:3000/api/rates/${base}`
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Backend svarte ikke riktig"
+            );
+        }
+
+        const data = await response.json();
+
+        // LAGRE CACHE
+        localStorage.setItem(
+            CACHE_KEY + base,
+            JSON.stringify(data)
+        );
+
+        localStorage.setItem(
+            CACHE_TIME_KEY + base,
+            now
+        );
+
+        return {
+            ...data,
+            fromCache: false
+        };
+
+    } catch (error) {
+
+        console.log("API feil:", error);
+
+        // FALLBACK CACHE
+        if (cachedData) {
+
+            console.log(
+                "Bruker gammel cache"
+            );
+
+            return {
+                ...JSON.parse(cachedData),
+                fromCache: true
+            };
+        }
+
+        throw error;
+    }
 }
 
-document.getElementById("clearCache").addEventListener("click", () => {
 
-    localStorage.clear();
+// KONVERTER VALUTA
+async function convert() {
 
-    alert("Cache slettet!");
-});
+    try {
 
-selectTo.addEventListener("change", () => {
-    const valgtCurrency = selectTo.value;
+        const amount =
+            Number(
+                document.getElementById("amount").value
+            );
 
-    
-    bg.style.backgroundImage = `url(${currencyBilder[valgtCurrency]})`;
+        const fromCurrency =
+            fromSelect.value;
+
+        const toCurrency =
+            toSelect.value;
+
+        // VALIDERING
+        if (
+            isNaN(amount) ||
+            amount <= 0
+        ) {
+
+            result.innerText =
+                "Skriv inn et gyldig beløp";
+
+            return;
+        }
+
+        // HENT DATA
+        const data =
+            await getRates(fromCurrency);
+
+        // HENT RATE
+        const rate =
+            data.conversion_rates[toCurrency];
+
+        if (!rate) {
+
+            throw new Error(
+                "Fant ikke valutakurs"
+            );
+        }
+
+        // REGN UT
+        const output =
+            (amount * rate).toFixed(2);
+
+        // VIS RESULTAT
+        result.innerText =
+            `${amount} ${fromCurrency} = ${output} ${toCurrency}`;
+
+        // VIS SIST OPPDATERT
+        const cachedTime =
+            localStorage.getItem(
+                CACHE_TIME_KEY + fromCurrency
+            );
+
+        if (cachedTime) {
+
+            const date =
+                new Date(Number(cachedTime));
+
+            lastUpdated.innerText =
+                "Sist oppdatert: " +
+                date.toLocaleString("no-NO");
+
+            // VIS CACHE STATUS
+            if (data.fromCache) {
+
+                lastUpdated.innerText +=
+                    " (cache)";
+            }
+        }
+
+    } catch (error) {
+
+        console.log(error);
+
+        result.innerText =
+            "Noe gikk galt";
+    }
+}
+
+
+// OPPDATER BAKGRUNN
+function updateBackground() {
+
+    const selectedCurrency =
+        toSelect.value;
+
+    bg.style.backgroundImage =
+        `url(${currencyImages[selectedCurrency]})`;
+
     bg.style.opacity = 1;
+}
 
-});
 
-const convertButton = document.getElementById("convertButton");
-convertButton.addEventListener("click", convert);
+// KONVERTER-KNAPP
+document
+    .getElementById("convertButton")
+    .addEventListener("click", convert);
 
-bg.style.opacity = 0;
+
+// BYTT VALUTA
+document
+    .getElementById("swapButton")
+    .addEventListener("click", () => {
+
+        const temp =
+            fromSelect.value;
+
+        fromSelect.value =
+            toSelect.value;
+
+        toSelect.value =
+            temp;
+
+        updateBackground();
+
+        convert();
+    });
+
+
+// AUTO OPPDATER BAKGRUNN
+toSelect.addEventListener(
+    "change",
+    updateBackground
+);
+
+
+// ENTER KNAPP
+document
+    .getElementById("amount")
+    .addEventListener("keydown", (e) => {
+
+        if (e.key === "Enter") {
+
+            convert();
+        }
+    });
+
+
+// TØM CACHE
+document
+    .getElementById("clearCache")
+    .addEventListener("click", () => {
+
+        localStorage.clear();
+
+        alert("Cache slettet!");
+    });
+
+
+// START
+updateBackground();
