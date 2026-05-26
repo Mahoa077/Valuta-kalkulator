@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://127.0.0.1:8080/ -->
+<html lang="no"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valutakalkulator</title>
+    <link rel="stylesheet" href="./Valutakalkulator_files/style.css">
+</head>
+
+<body>
+
+    <div id="bg" style="background-image: url(&quot;bilder/cadbilde.png&quot;); opacity: 1;"></div>
+    <div id="overlay"></div>
+
+    <div class="container">
+
+        <h2>Valuta Kalkulator</h2>
+
+        <input type="number" id="amount" placeholder="Beløp">
+
+        <h4>Velg valuta du har:</h4>
+        <select id="fromCurrency"><option value="USD">USD</option><option value="NOK">NOK</option><option value="EUR">EUR</option><option value="AUD">AUD</option><option value="CLP">CLP</option><option value="SEK">SEK</option><option value="CAD">CAD</option><option value="DKK">DKK</option><option value="JPY">JPY</option></select>
+
+        <h4>Velg valuta du vil konvertere til:</h4>
+        <select id="toCurrency"><option value="USD">USD</option><option value="NOK">NOK</option><option value="EUR">EUR</option><option value="AUD">AUD</option><option value="CLP">CLP</option><option value="SEK">SEK</option><option value="CAD">CAD</option><option value="DKK">DKK</option><option value="JPY">JPY</option></select>
+
+        <button id="swapButton">Bytt valuta</button>
+
+        <button id="convertButton">Konverter</button>
+
+        <p id="result">5656 SEK = 840.48 CAD</p>
+
+        <p id="lastUpdated">Sist oppdatert: 26.5.2026, 12:43:38 (cache)</p>
+
+        <!-- <button id="clearCache">Tøm cache</button> -->
+
+    </div>
+
+    <script src="./Valutakalkulator_files/script.js"></script>
+
+<!-- Code injected by live-server -->
+<script type="text/javascript">
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function() {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					head.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					head.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function(msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			console.log('Live reload enabled.');
+		})();
+	}
+	// ]]>
+</script>
+
+</body></html>

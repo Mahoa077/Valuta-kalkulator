@@ -5,7 +5,6 @@ console.log("App har startet");
 const CACHE_KEY = "exchangeRates_";
 const CACHE_TIME_KEY = "exchangeRatesTime_";
 
-
 // 1 UKE CACHE
 const CACHE_TIME =
     1000 * 60 * 60 * 24 * 7;
