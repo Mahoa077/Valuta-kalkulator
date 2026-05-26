@@ -24,6 +24,7 @@ const currencies = [
 ];
 
 
+
 // HTML ELEMENTER
 const fromSelect =
     document.getElementById("fromCurrency");
@@ -102,6 +103,7 @@ async function getRates(base = "USD") {
     }
 
     console.log("Henter ny data for", base);
+    
 
     try {
 
@@ -300,7 +302,7 @@ document
 
 
 // TØM CACHE
-document
+/*document
     .getElementById("clearCache")
     .addEventListener("click", () => {
 
@@ -309,6 +311,7 @@ document
         alert("Cache slettet!");
     });
 
+*/
 
 // START
 updateBackground();
