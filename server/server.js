@@ -29,7 +29,7 @@ function saveCacheToFile() {
 }
 
 app.get("/api/rates/:base", async (req, res) => {
-
+    console.log("Hei")
     const base = req.params.base;
 
     console.log("Request:", base);
