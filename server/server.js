@@ -8,55 +8,36 @@ require("dotenv").config();
 const app = express();
 const PORT = 3000;
 
-// CORS
-app.use(cors({
-    origin: "*",
-    methods: ["GET"]
-}));
+app.use(cors({ origin: "*" }));
 
-// CACHE FIL
 const CACHE_FILE = path.join(__dirname, "serverCache.json");
 
 let serverCache = {};
 
-// LAST CACHE FRA FIL
+// LOAD CACHE
 if (fs.existsSync(CACHE_FILE)) {
-    try {
-        const fileContent = fs.readFileSync(CACHE_FILE, "utf-8");
-
-        if (fileContent.trim()) {
-            serverCache = JSON.parse(fileContent);
-            console.log("Cache lastet fra fil");
-        }
-    } catch (err) {
-        console.log("Feil i cache-fil, starter tom cache");
-        serverCache = {};
+    const file = fs.readFileSync(CACHE_FILE, "utf-8");
+    if (file.trim()) {
+        serverCache = JSON.parse(file);
+        console.log("Cache lastet fra fil");
     }
 }
 
-// LAGRE CACHE
+// SAVE CACHE
 function saveCache() {
-    fs.writeFileSync(
-        CACHE_FILE,
-        JSON.stringify(serverCache, null, 2)
-    );
-    console.log("Cache lagret til fil");
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(serverCache, null, 2));
+    console.log("Cache lagret");
 }
 
-// API
+// ROUTE
 app.get("/api/rates/:base", async (req, res) => {
     const base = req.params.base;
 
     console.log("Request:", base);
 
-    // CACHE HIT
     if (serverCache[base]) {
         console.log("CACHE HIT:", base);
-
-        return res.json({
-            ...serverCache[base],
-            fromCache: true
-        });
+        return res.json(serverCache[base]);
     }
 
     console.log("CACHE MISS:", base);
@@ -69,13 +50,9 @@ app.get("/api/rates/:base", async (req, res) => {
         const data = await response.json();
 
         serverCache[base] = data;
-
         saveCache();
 
-        return res.json({
-            ...data,
-            fromCache: false
-        });
+        return res.json(data);
 
     } catch (err) {
         console.log("ERROR:", err);
@@ -83,7 +60,6 @@ app.get("/api/rates/:base", async (req, res) => {
     }
 });
 
-// START SERVER
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server kjører på port ${PORT}`);
 });
