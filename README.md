@@ -1,25 +1,67 @@
+
+
 # Valuta-kalkulator
 
-Jeg valgte grønn som bakgrunnsfarge, på grunn av at den har sterk kontrast til det hvite. Som da gjør det enklere for bruker å se hvor de skal trykke. Jeg lagde konverter knappen rund for at estetikken skulle bli finere, og for at den skulle se mer ut som en knapp. Jeg valgte også å lage hover på knappen slik at man kan enklere se når man trykker på knappen. Grunnen til at konverter knappen er neders er på grunn av at det føles mest systematisk ut, og slik er det på andre apper. Som da gjør det enklere for bruker å finne knappen hvis deen er sirka samme sted som den pleier å være. 
+Dette er en webaplikasjon som konverterer valutaen i santid ved bruk av ExchangeRate-API. 
+I dette prosjektet bruker jeg frontend og backend, de er separerte men blir koblet sammen gjennom en client server arkitektur. 
 
-Slik bruker du Valuta kalkulatoren:
+# Brukermanual: 
 
-Du skriver inn et gyldig beløp i det øverste feltet
-Så velger du hvilken valuta du skal konvertere fra i det nest øverste feltet
-Deretter velger du valutaen du skal konvertere til i det nest nederste feltet
-Når du har gjort dette så kan du trykke på konverter knappen, som da viser beløpet du får etter konverteringen under selve konvertering knappen. 
+1. starte frontend :
+Åpne prosjektet i VScode og start index html med live server. 
+Eksempel: http://127.0.0.1:5500 
 
-(Hvis du skal bruke den selv/flere ganger så kan du legge inn din egen API key i stedet for den som står i koden. Slik at du ikke bruker opp mine requests. Du kan få egen API key via å gå inn på ExchangeRate-API og oprette deg en bruker. Deretter kan du kopiere API-key du får og legge den inn i stedet for min.)
+2. Starte backend server : 
+Gå inn i server mappen i terminalen via å skrive cd server
+Så start serveren via å skrive node server.js 
+Dette skal vises når serveren kjører: Server kjører på port 3000 
 
-Denne valuta-kalkulatoren kan bli hostet på nettet siden jeg har brukt vercel.com
-For å finne nettsiden trenger du bare å søke opp https://valuta-kalkulator-seven.vercel.app/ 
+# Hvordan man bruker selve Valuta-kalkulatoren i nettsiden 
 
-Prosjektet er bygget med en client-server arkitektur.
+1. Skriv inn det beløpet du ønsker å konvertere i det hvite feltet
+2. Velg den valutaen du vil konvertere fra i det nest øverste feltet 
+3. Velg hvilken valuta du vil konvertere til fra det tredje feltet
+4. Så trykk på konverter for å få opp hvor mye det er i den nye kursen 
+5. Se under konverter knappen, der skal du se hvor mye det ble i den nye kursen 
 
-Frontend er separert fra backend, og kommunikasjon skjer via REST API.
 
-Backend kjører på Node.js med Express og håndteres i produksjon av PM2.
+# Funksjonene denne webaplikasjonen har er: 
 
-NGINX brukes som reverse proxy for å rute API-kall og servere frontend på samme domene.
+Konvertering mellom flere valutaer 
+Caching av API-data i serverCache.json
+Backend med Node.js og Express
+Oppdaterer valutakurser etter en hvis satt tid
+Hover-effekt og interaktiv UI
+Response og brukervennelig design 
+Dynamisk bakgrunn basert på hvilken valuta du konverterer til 
 
-Applikasjonen bruker caching for å redusere API-kall og forbedre ytelse.
+# Teknologien jeg har brukt:
+# Frontend: 
+HTML
+CSS
+Javascript 
+Frontenden håndterer da disse punktene:
+Brukergrensersnitt 
+Input-feltene 
+Dropdown-menyene 
+Fetch requestene som går til backenden 
+
+# Backend 
+Node.js 
+Express.js
+Backenden håndterer disse punktene: 
+API-kall 
+Caching
+Ruting 
+Kommunikasjonen med frontenden
+
+# API 
+Prosjektet mitt bruker kun ExchangeRate-API for å hente oppdaterte valutakurser 
+
+# Caching 
+Jeg bruker Caching for å redusere API-kall, slik at jeg ikke går tom for api-kall. 
+Når man henter en valutakurs så blir den lagret i serverCaching.json. 
+Det som skjer da er at hver gang sjekker backend cache før det blir sendt et nytt API-kall. Dette er for å forhindre unødvendige mange api kall. 
+
+
+
