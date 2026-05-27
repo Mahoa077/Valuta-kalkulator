@@ -8,7 +8,7 @@ require("dotenv").config();
 const app = express();
 const PORT = 3000;
 
-// 🔥 CORS MÅ KOMME FØRST
+// CORS
 app.use(cors({
     origin: "*",
     methods: ["GET"]
@@ -21,11 +21,16 @@ let serverCache = {};
 
 // LAST CACHE FRA FIL
 if (fs.existsSync(CACHE_FILE)) {
-    const fileContent = fs.readFileSync(CACHE_FILE, "utf-8");
+    try {
+        const fileContent = fs.readFileSync(CACHE_FILE, "utf-8");
 
-    if (fileContent.trim()) {
-        serverCache = JSON.parse(fileContent);
-        console.log("Cache lastet fra fil");
+        if (fileContent.trim()) {
+            serverCache = JSON.parse(fileContent);
+            console.log("Cache lastet fra fil");
+        }
+    } catch (err) {
+        console.log("Feil i cache-fil, starter tom cache");
+        serverCache = {};
     }
 }
 
@@ -38,20 +43,20 @@ function saveCache() {
     console.log("Cache lagret til fil");
 }
 
-// API ROUTE
+// API
 app.get("/api/rates/:base", async (req, res) => {
     const base = req.params.base;
 
     console.log("Request:", base);
-    console.log("CACHE STATE BEFORE:", Object.keys(serverCache));
 
-
-    console.log("Request:", base);
-
+    // CACHE HIT
     if (serverCache[base]) {
         console.log("CACHE HIT:", base);
-        console.log("CACHE DATA:", serverCache[base]);
-        return res.json(serverCache[base]);
+
+        return res.json({
+            ...serverCache[base],
+            fromCache: true
+        });
     }
 
     console.log("CACHE MISS:", base);
@@ -65,11 +70,12 @@ app.get("/api/rates/:base", async (req, res) => {
 
         serverCache[base] = data;
 
-        console.log("CACHE SAVED:", base);
-        
         saveCache();
 
-        res.json(data);
+        return res.json({
+            ...data,
+            fromCache: false
+        });
 
     } catch (err) {
         console.log("ERROR:", err);

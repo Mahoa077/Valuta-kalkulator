@@ -36,7 +36,9 @@ toSelect.value = "NOK";
 async function getRates(base) {
     console.log("Henter data fra server:", base);
 
-    const response = await fetch(`http://localhost:3000/api/rates/${base}`);
+    const response = await fetch(
+        `http://localhost:3000/api/rates/${base}`
+    );
 
     if (!response.ok) {
         throw new Error("Server error");
@@ -49,7 +51,7 @@ async function getRates(base) {
     return data;
 }
 
-// CONVERT
+// KONVERTER
 async function convert() {
     try {
         const amount = Number(document.getElementById("amount").value);
@@ -76,15 +78,15 @@ async function convert() {
         result.innerText =
             `${amount} ${fromCurrency} = ${output} ${toCurrency}`;
 
-        // SAFE TIME
-        if (data.time_last_update_unix) {
-            const time = new Date(data.time_last_update_unix * 1000);
+        // CACHE / TIME INFO
+        const time = data.time_last_update_unix
+            ? new Date(data.time_last_update_unix * 1000)
+            : null;
 
-            lastUpdated.innerText =
-                "Sist oppdatert: " + time.toLocaleString("no-NO");
-        } else {
-            lastUpdated.innerText = "Sist oppdatert: ukjent";
-        }
+        lastUpdated.innerText =
+            "Sist oppdatert: " +
+            (time ? time.toLocaleString("no-NO") : "ukjent") +
+            (data.fromCache ? " (CACHE)" : " (API)");
 
     } catch (err) {
         console.log(err);
