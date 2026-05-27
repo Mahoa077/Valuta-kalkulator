@@ -1,40 +1,17 @@
 console.log("App har startet");
 
-
 // VALUTAER
-const currencies = [
-    "USD",
-    "NOK",
-    "EUR",
-    "AUD",
-    "CLP",
-    "SEK",
-    "CAD",
-    "DKK",
-    "JPY"
-];
+const currencies = ["USD","NOK","EUR","AUD","CLP","SEK","CAD","DKK","JPY"];
 
-
-// HTML ELEMENTER
-const fromSelect =
-    document.getElementById("fromCurrency");
-
-const toSelect =
-    document.getElementById("toCurrency");
-
-const result =
-    document.getElementById("result");
-
-const lastUpdated =
-    document.getElementById("lastUpdated");
-
-const bg =
-    document.getElementById("bg");
-
+// ELEMENTER
+const fromSelect = document.getElementById("fromCurrency");
+const toSelect = document.getElementById("toCurrency");
+const result = document.getElementById("result");
+const lastUpdated = document.getElementById("lastUpdated");
+const bg = document.getElementById("bg");
 
 // BILDER
 const currencyImages = {
-
     USD: "bilder/usdbilde.png",
     EUR: "bilder/eurbilde.png",
     NOK: "bilder/nokbilde.png",
@@ -46,180 +23,99 @@ const currencyImages = {
     JPY: "bilder/jpybilde.png"
 };
 
-
-// FYLL DROPDOWNS
-currencies.forEach(currency => {
-
-    const option1 =
-        new Option(currency, currency);
-
-    const option2 =
-        new Option(currency, currency);
-
-    fromSelect.add(option1);
-    toSelect.add(option2);
+// DROPDOWN
+currencies.forEach(c => {
+    fromSelect.add(new Option(c, c));
+    toSelect.add(new Option(c, c));
 });
 
-
-// STANDARDVERDIER
 fromSelect.value = "USD";
 toSelect.value = "NOK";
 
-
-// HENT VALUTAKURSER
-async function getRates(base = "USD") {
-
+// API
+async function getRates(base) {
     console.log("Henter data fra server:", base);
 
-    try {
+    const response = await fetch(`http://localhost:3000/api/rates/${base}`);
 
-        // BACKEND API
-        const response = await fetch(
-            `http://192.168.20.77:3000/api/rates/${base}`
-        );
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Backend svarte ikke riktig"
-            );
-        }
-
-        const data = await response.json();
-
-        return data;
-
-    } catch (error) {
-
-        console.log("API feil:", error);
-
-        throw error;
+    if (!response.ok) {
+        throw new Error("Server error");
     }
+
+    const data = await response.json();
+
+    console.log("API DATA:", data);
+
+    return data;
 }
 
-
-// KONVERTER VALUTA
+// CONVERT
 async function convert() {
-
     try {
+        const amount = Number(document.getElementById("amount").value);
+        const fromCurrency = fromSelect.value;
+        const toCurrency = toSelect.value;
 
-        const amount =
-            Number(
-                document.getElementById("amount").value
-            );
-
-        const fromCurrency =
-            fromSelect.value;
-
-        const toCurrency =
-            toSelect.value;
-
-        // VALIDERING
-        if (
-            isNaN(amount) ||
-            amount <= 0
-        ) {
-
-            result.innerText =
-                "Skriv inn et gyldig beløp";
-
+        if (Number.isNaN(amount) || amount <= 0) {
+            result.innerText = "Skriv inn et gyldig beløp";
             return;
         }
 
-        // HENT DATA
-        const data =
-            await getRates(fromCurrency);
+        const data = await getRates(fromCurrency);
 
-        // HENT RATE
-        const rate =
-            data.conversion_rates[toCurrency];
+        console.log("FROM SERVER:", data);
+
+        const rate = data?.conversion_rates?.[toCurrency];
 
         if (!rate) {
-
-            throw new Error(
-                "Fant ikke valutakurs"
-            );
+            throw new Error("Fant ikke valutakurs");
         }
 
-        // REGN UT
-        const output =
-            (amount * rate).toFixed(2);
+        const output = (amount * rate).toFixed(2);
 
-        // VIS RESULTAT
         result.innerText =
             `${amount} ${fromCurrency} = ${output} ${toCurrency}`;
 
-        // VIS STATUS
-        lastUpdated.innerText =
-            "Data hentes fra server-cache";
+        // SAFE TIME
+        if (data.time_last_update_unix) {
+            const time = new Date(data.time_last_update_unix * 1000);
 
-    } catch (error) {
+            lastUpdated.innerText =
+                "Sist oppdatert: " + time.toLocaleString("no-NO");
+        } else {
+            lastUpdated.innerText = "Sist oppdatert: ukjent";
+        }
 
-        console.log(error);
-
-        result.innerText =
-            "Noe gikk galt";
+    } catch (err) {
+        console.log(err);
+        result.innerText = "Noe gikk galt";
     }
 }
 
-
-// OPPDATER BAKGRUNN
+// BACKGROUND
 function updateBackground() {
-
-    const selectedCurrency =
-        toSelect.value;
-
-    bg.style.backgroundImage =
-        `url(${currencyImages[selectedCurrency]})`;
-
+    const currency = toSelect.value;
+    bg.style.backgroundImage = `url(${currencyImages[currency]})`;
     bg.style.opacity = 1;
 }
 
+// EVENTS
+document.getElementById("convertButton").addEventListener("click", convert);
 
-// KONVERTER-KNAPP
-document
-    .getElementById("convertButton")
-    .addEventListener("click", convert);
+document.getElementById("swapButton").addEventListener("click", () => {
+    const temp = fromSelect.value;
+    fromSelect.value = toSelect.value;
+    toSelect.value = temp;
 
+    updateBackground();
+    convert();
+});
 
-// BYTT VALUTA
-document
-    .getElementById("swapButton")
-    .addEventListener("click", () => {
+toSelect.addEventListener("change", updateBackground);
 
-        const temp =
-            fromSelect.value;
-
-        fromSelect.value =
-            toSelect.value;
-
-        toSelect.value =
-            temp;
-
-        updateBackground();
-
-        convert();
-    });
-
-
-// AUTO OPPDATER BAKGRUNN
-toSelect.addEventListener(
-    "change",
-    updateBackground
-);
-
-
-// ENTER KNAPP
-document
-    .getElementById("amount")
-    .addEventListener("keydown", (e) => {
-
-        if (e.key === "Enter") {
-
-            convert();
-        }
-    });
-
+document.getElementById("amount").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") convert();
+});
 
 // START
 updateBackground();
