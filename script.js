@@ -1,16 +1,6 @@
 console.log("App har startet");
 
 
-// CACHE
-const CACHE_KEY = "exchangeRates_";
-const CACHE_TIME_KEY = "exchangeRatesTime_";
-
-
-// 1 UKE CACHE
-const CACHE_TIME =
-    1000 * 60 * 60 * 24 * 7;
-
-
 // VALUTAER
 const currencies = [
     "USD",
@@ -23,7 +13,6 @@ const currencies = [
     "DKK",
     "JPY"
 ];
-
 
 
 // HTML ELEMENTER
@@ -80,31 +69,7 @@ toSelect.value = "NOK";
 // HENT VALUTAKURSER
 async function getRates(base = "USD") {
 
-    const cachedData =
-        localStorage.getItem(CACHE_KEY + base);
-
-    const cachedTime =
-        localStorage.getItem(CACHE_TIME_KEY + base);
-
-    const now = Date.now();
-
-    // BRUK CACHE
-    if (
-        cachedData &&
-        cachedTime &&
-        (now - cachedTime < CACHE_TIME)
-    ) {
-
-        console.log("Bruker cache for", base);
-
-        return {
-            ...JSON.parse(cachedData),
-            fromCache: true
-        };
-    }
-
-    console.log("Henter ny data for", base);
-    
+    console.log("Henter data fra server:", base);
 
     try {
 
@@ -122,38 +87,11 @@ async function getRates(base = "USD") {
 
         const data = await response.json();
 
-        // LAGRE CACHE
-        localStorage.setItem(
-            CACHE_KEY + base,
-            JSON.stringify(data)
-        );
-
-        localStorage.setItem(
-            CACHE_TIME_KEY + base,
-            now
-        );
-
-        return {
-            ...data,
-            fromCache: false
-        };
+        return data;
 
     } catch (error) {
 
         console.log("API feil:", error);
-
-        // FALLBACK CACHE
-        if (cachedData) {
-
-            console.log(
-                "Bruker gammel cache"
-            );
-
-            return {
-                ...JSON.parse(cachedData),
-                fromCache: true
-            };
-        }
 
         throw error;
     }
@@ -211,28 +149,9 @@ async function convert() {
         result.innerText =
             `${amount} ${fromCurrency} = ${output} ${toCurrency}`;
 
-        // VIS SIST OPPDATERT
-        const cachedTime =
-            localStorage.getItem(
-                CACHE_TIME_KEY + fromCurrency
-            );
-
-        if (cachedTime) {
-
-            const date =
-                new Date(Number(cachedTime));
-
-            lastUpdated.innerText =
-                "Sist oppdatert: " +
-                date.toLocaleString("no-NO");
-
-            // VIS CACHE STATUS
-            if (data.fromCache) {
-
-                lastUpdated.innerText +=
-                    " (cache)";
-            }
-        }
+        // VIS STATUS
+        lastUpdated.innerText =
+            "Data hentes fra server-cache";
 
     } catch (error) {
 
@@ -301,18 +220,6 @@ document
         }
     });
 
-
-// TØM CACHE
-/*document
-    .getElementById("clearCache")
-    .addEventListener("click", () => {
-
-        localStorage.clear();
-
-        alert("Cache slettet!");
-    });
-
-*/
 
 // START
 updateBackground();

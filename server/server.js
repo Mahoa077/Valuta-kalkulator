@@ -17,6 +17,7 @@ const PORT = 3000;
 const CACHE_FILE =
     path.join(__dirname, "serverCache.json");
 
+    console.log("Cache-fil:", CACHE_FILE);
 
 // SERVER CACHE
 let serverCache = {};
