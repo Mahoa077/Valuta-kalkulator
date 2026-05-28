@@ -14,7 +14,7 @@ const CACHE_FILE = path.join(__dirname, "serverCache.json");
 
 let serverCache = {};
 
-// LOAD CACHE
+// LOADER CACHE
 if (fs.existsSync(CACHE_FILE)) {
     const file = fs.readFileSync(CACHE_FILE, "utf-8");
     if (file.trim()) {
@@ -23,13 +23,13 @@ if (fs.existsSync(CACHE_FILE)) {
     }
 }
 
-// SAVE CACHE
+// Lagrer CACHE
 function saveCache() {
     fs.writeFileSync(CACHE_FILE, JSON.stringify(serverCache, null, 2));
     console.log("Cache lagret");
 }
 
-// ROUTE
+// Routing, henter valutakursene, cacher resultatet og deretter sener det tilbake til klienten
 app.get("/api/rates/:base", async (req, res) => {
     const base = req.params.base;
 
