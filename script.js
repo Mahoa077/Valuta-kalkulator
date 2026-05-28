@@ -32,7 +32,7 @@ toSelect.value = "NOK";
 async function getRates(base) {
     console.log("Henter data fra server:", base);
 
-    const res = await fetch(`http://localhost:3000/api/rates/${base}`);
+    const res = await fetch(`http://192.168.20.77:3000/api/rates/${base}`);
 
     if (!res.ok) throw new Error("Server error");
 
