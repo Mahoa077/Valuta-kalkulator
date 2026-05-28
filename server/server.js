@@ -64,13 +64,19 @@ app.get("/api/rates/:base", async (req, res) => {
 
         const url = `https://v6.exchangerate-api.com/v6/${process.env.API_KEY}/latest/${base}`;
 
+        console.log("URL:", url);
+
         const response = await fetch(url);
+
+        console.log("STATUS:", response.status);
 
         if (!response.ok) {
             throw new Error(`API feil: ${response.status}`);
         }
 
         const data = await response.json();
+
+        console.log("API RESPONSE:", data);
 
         // lagre cache
         serverCache[base] = {
@@ -79,6 +85,8 @@ app.get("/api/rates/:base", async (req, res) => {
         };
 
         saveCache();
+
+        console.log("API RESPONSE:", data);
 
         return res.json(data);
 
