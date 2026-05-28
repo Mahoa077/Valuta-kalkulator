@@ -6,6 +6,8 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+app.use(express.json());
+
 const PORT = 3000;
 
 app.use(cors({ origin: "*" }));
