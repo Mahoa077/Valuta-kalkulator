@@ -15,6 +15,10 @@ const PORT = 3000;
 const CACHE_FILE = path.join(__dirname, "serverCache.json");
 let serverCache = {};
 
+app.get("/", (req, res) => {
+    res.send("SERVER FUNKER");
+});
+
 // LAST CACHE
 if (fs.existsSync(CACHE_FILE)) {
     const file = fs.readFileSync(CACHE_FILE, "utf-8");
