@@ -8,6 +8,8 @@ const result = document.getElementById("result");
 const lastUpdated = document.getElementById("lastUpdated");
 const bg = document.getElementById("bg");
 
+const API_URL = "http://192.168.20.77:3000";
+
 const currencyImages = {
     USD:"bilder/usdbilde.png",
     EUR:"bilder/eurbilde.png",
@@ -32,15 +34,19 @@ toSelect.value = "NOK";
 async function getRates(base) {
     console.log("Henter data fra server:", base);
 
-    const res = await fetch(`http://192.168.20.77:3000/api/rates/${base}`);
+    try {
+        const res = await fetch(`${API_URL}/api/rates/${base}`);
 
-    if (!res.ok) throw new Error("Server error");
+        if (!res.ok) {
+            throw new Error("Server error");
+        }
 
-    const data = await res.json();
+        return await res.json();
 
-    //console.log("API DATA:", data);
-
-    return data;
+    } catch (err) {
+        console.log("FETCH ERROR:", err);
+        throw err;
+    }
 }
 
 async function convert() {
@@ -56,12 +62,9 @@ async function convert() {
 
         const data = await getRates(from);
 
-        //console.log("FROM SERVER:", data);
-
         const rate = data?.conversion_rates?.[to];
 
         if (!rate) {
-            console.log("Mangler rate:", data);
             result.innerText = "Fant ikke kurs";
             return;
         }
@@ -72,7 +75,8 @@ async function convert() {
 
         if (data.time_last_update_unix) {
             const t = new Date(data.time_last_update_unix * 1000);
-            lastUpdated.innerText = "Sist oppdatert: " + t.toLocaleString("no-NO");
+            lastUpdated.innerText =
+                "Sist oppdatert: " + t.toLocaleString("no-NO");
         }
 
     } catch (err) {
@@ -87,20 +91,23 @@ function updateBackground() {
 }
 
 // events
-document.getElementById("convertButton").addEventListener("click", convert);
+document.getElementById("convertButton")
+    .addEventListener("click", convert);
 
-document.getElementById("swapButton").addEventListener("click", () => {
-    const t = fromSelect.value;
-    fromSelect.value = toSelect.value;
-    toSelect.value = t;
-    updateBackground();
-    convert();
-});
+document.getElementById("swapButton")
+    .addEventListener("click", () => {
+        const t = fromSelect.value;
+        fromSelect.value = toSelect.value;
+        toSelect.value = t;
+        updateBackground();
+        convert();
+    });
 
 toSelect.addEventListener("change", updateBackground);
 
-document.getElementById("amount").addEventListener("keydown", e => {
-    if (e.key === "Enter") convert();
-});
+document.getElementById("amount")
+    .addEventListener("keydown", e => {
+        if (e.key === "Enter") convert();
+    });
 
 updateBackground();
