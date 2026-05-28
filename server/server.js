@@ -6,6 +6,8 @@ const cors = require("cors");
 // Node 20 har fetch innebygd (OK)
 require("dotenv").config();
 
+console.log("API KEY:", process.env.API_KEY);
+
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
@@ -90,6 +92,6 @@ app.get("/api/rates/:base", async (req, res) => {
 });
 
 // START SERVER
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT, () => {
     console.log(`Server kjører på port ${PORT}`);
 });

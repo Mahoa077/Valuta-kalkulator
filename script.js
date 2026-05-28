@@ -8,7 +8,7 @@ const result = document.getElementById("result");
 const lastUpdated = document.getElementById("lastUpdated");
 const bg = document.getElementById("bg");
 
-const API_URL = "http://192.168.20.77:3000";
+const API_URL = "http://localhost:3000";
 
 const currencyImages = {
     USD:"bilder/usdbilde.png",
