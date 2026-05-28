@@ -1,6 +1,6 @@
 console.log("App har startet");
 
-const currencies = ["USD","NOK","EUR","AUD","CLP","SEK","CAD","DKK","JPY"];
+const currencies = ["USD","NOK","EUR","AUD","CLP","SEK","CAD","DKK","JPY","CNY"];
 
 const fromSelect = document.getElementById("fromCurrency");
 const toSelect = document.getElementById("toCurrency");
@@ -32,21 +32,13 @@ fromSelect.value = "USD";
 toSelect.value = "NOK";
 
 async function getRates(base) {
-    console.log("Henter data fra server:", base);
+    const res = await fetch(`${API_URL}/api/rates/${base}`);
 
-    try {
-        const res = await fetch(`${API_URL}/api/rates/${base}`);
-
-        if (!res.ok) {
-            throw new Error("Server error");
-        }
-
-        return await res.json();
-
-    } catch (err) {
-        console.log("FETCH ERROR:", err);
-        throw err;
+    if (!res.ok) {
+        throw new Error("Server error");
     }
+
+    return await res.json();
 }
 
 async function convert() {
@@ -62,7 +54,7 @@ async function convert() {
 
         const data = await getRates(from);
 
-        const rate = data?.conversion_rates?.[to];
+        const rate = data.conversion_rates[to];
 
         if (!rate) {
             result.innerText = "Fant ikke kurs";
@@ -73,10 +65,8 @@ async function convert() {
 
         result.innerText = `${amount} ${from} = ${output} ${to}`;
 
-        if (data.time_last_update_unix) {
-            const t = new Date(data.time_last_update_unix * 1000);
-            lastUpdated.innerText =
-                "Sist oppdatert: " + t.toLocaleString("no-NO");
+        if (data.date) {
+            lastUpdated.innerText = "Sist oppdatert: " + data.date;
         }
 
     } catch (err) {
